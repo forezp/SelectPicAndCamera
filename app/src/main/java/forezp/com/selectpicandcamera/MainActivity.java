@@ -130,6 +130,8 @@ public class MainActivity extends AppCompatActivity  implements EasyPermissions.
         } else if (requestCode == ImageUtils.REQUEST_CODE_GETIMAGE_BYCAMERA) {
             //setImageFromPath(tweet.getImageFilePath());
             setImageFromPath(mPhotoPath);
+
+
         }
     }
 
@@ -140,14 +142,22 @@ public class MainActivity extends AppCompatActivity  implements EasyPermissions.
      * @param path 图片在本地的路径
      */
     private void setImageFromPath(final String path) {
-        if (TextUtils.isEmpty(path)) return;
+        if (TextUtils.isEmpty(path)) {
+            return;
+        }
+        int degree =ImageUtils.readPictureDegree(path);
         try {
-            Bitmap bitmap = BitmapCreate.bitmapFromStream(
-                    new FileInputStream(path), 512, 512);
-
-            setImageFromBitmap(bitmap);
-            // 本地图片在这里销毁
-            bitmap.recycle();
+            Bitmap bitmap = BitmapCreate.bitmapFromStream(new FileInputStream(path), 512, 512);
+            if(degree!=0){
+                Bitmap newbitmap = ImageUtils.rotaingImageView(degree, bitmap);
+                setImageFromBitmap(newbitmap);
+                bitmap.recycle();
+                newbitmap.recycle();
+            }else {
+                setImageFromBitmap(bitmap);
+                // 本地图片在这里销毁
+                bitmap.recycle();
+            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
